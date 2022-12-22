@@ -6,7 +6,7 @@ layout: default
 ---
 
 <ul>
-  {% assign snapshots = site.static_files | where: "snapshots", true %}
+  {% assign snapshots = site.static_files | where: "snapshot", true %}
   {% for page in snapshots %}
     <li>
       <a href="{{ page.path }}">{{ page.name }}</a>
