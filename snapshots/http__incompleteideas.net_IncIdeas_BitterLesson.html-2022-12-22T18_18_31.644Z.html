@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> <html class="rctvtpql idc0_343"><!--
+ Page saved with SingleFile 
+ url: http://incompleteideas.net/IncIdeas/BitterLesson.html 
+ saved date: Thu Dec 22 2022 18:18:31 GMT+0000 (Greenwich Mean Time)
+--><meta charset=utf-8>
+<title>The Bitter Lesson</title>
+<style><!--.style1{font-family:Palatino}--></style>
+<link type=image/x-icon rel="shortcut icon" href=data:image/vnd.microsoft.icon;base64, data-sf-original-href=http://incompleteideas.net/favicon.ico><link rel=canonical href=http://incompleteideas.net/IncIdeas/BitterLesson.html><meta http-equiv=content-security-policy content="default-src 'none'; font-src 'self' data:; img-src 'self' data:; style-src 'unsafe-inline'; media-src 'self' data:; script-src 'unsafe-inline' data:; object-src 'self' data:;"><style>img[src="data:,"],source[src="data:,"]{display:none!important}</style></head>
+<body>
+<span class=style1>
+<h1>The Bitter Lesson<br>
+</h1>
+<h2>Rich Sutton</h2>
+<h3>March 13, 2019<br>
+</h3>
+The biggest lesson that can be read from 70 years of AI research is
+that general methods that leverage computation are ultimately the most
+effective, and by a large margin. The ultimate reason for this is
+Moore's law, or rather its generalization of continued exponentially
+falling cost per unit of computation. Most AI research has been
+conducted as if the computation available to the agent were constant
+(in which case leveraging human knowledge would be one of the only ways
+to improve performance) but, over a slightly longer time than a typical
+research project, massively more computation inevitably becomes
+available. Seeking an improvement that makes a difference in the
+shorter term, researchers seek to leverage their human knowledge of the
+domain, but the only thing that matters in the long run is the
+leveraging of computation. These two need not run counter to each
+other, but in practice they tend to. Time spent on one is time not
+spent on the other. There are psychological commitments to investment
+in one approach or the other. And the human-knowledge approach tends to
+complicate methods in ways that make them less suited to taking
+advantage of general methods leveraging computation.&nbsp; There were
+many examples of AI researchers' belated learning of this bitter
+lesson,
+and it is instructive to review some of the most prominent.<br>
+<br>
+In computer chess, the methods that defeated the world champion,
+Kasparov, in 1997, were based on massive, deep search. At the time,
+this was looked upon with dismay by the majority of computer-chess
+researchers who had pursued methods that leveraged human understanding
+of the special structure of chess. When a simpler, search-based
+approach with special hardware and software proved vastly more
+effective, these human-knowledge-based chess researchers were not good
+losers. They said that ``brute force" search may have won this time,
+but it was not a general strategy, and anyway it was not how people
+played chess. These researchers wanted methods based on human input to
+win and were disappointed when they did not.<br>
+<br>
+A similar pattern of research progress was seen in computer Go, only
+delayed by a further 20 years. Enormous initial efforts went into
+avoiding search by taking advantage of human knowledge, or of the
+special features of the game, but all those efforts proved irrelevant,
+or worse, once search was applied effectively at scale. Also important
+was the use of learning by self play to learn a value function (as it
+was in many other games and even in chess, although learning did not
+play a big role in the 1997 program that first beat a world champion).
+Learning by self play, and learning in general, is like search in that
+it enables massive computation to be brought to bear. Search and
+learning are the two most important classes of techniques for utilizing
+massive amounts of computation in AI research. In computer Go, as in
+computer chess, researchers' initial effort was directed towards
+utilizing human understanding (so that less search was needed) and only
+much later was much greater success had by embracing search and
+learning.<br>
+<br>
+In speech recognition, there was an early competition, sponsored by
+DARPA, in the 1970s. Entrants included a host of special methods that
+took
+advantage of human knowledge---knowledge of words, of phonemes, of the
+human vocal tract, etc. On the other side were newer methods that were
+more statistical in nature and did much more computation, based on
+hidden Markov models (HMMs). Again, the statistical methods won out
+over the human-knowledge-based methods. This led to a major change in
+all of natural language processing, gradually over decades, where
+statistics and computation came to dominate the field. The recent rise
+of deep learning in speech recognition is the most recent step in this
+consistent direction. Deep learning methods rely even less on human
+knowledge, and use even more computation, together with learning on
+huge training sets, to produce dramatically better speech recognition
+systems. As in the games, researchers always tried to make systems that
+worked the way the researchers thought their own minds worked---they
+tried to put that knowledge in their systems---but it proved ultimately
+counterproductive, and a colossal waste of researcher's time, when,
+through Moore's law, massive computation became available and a means
+was found to put it to good use.<br>
+<br>
+In computer vision, there has been a similar pattern. Early methods
+conceived of vision as searching for edges, or generalized cylinders,
+or in terms of SIFT features. But today all this is discarded. Modern
+deep-learning neural networks use only the notions of convolution and
+certain kinds of invariances, and perform much better.<br>
+<br>
+This is a big lesson. As a field, we still have not thoroughly learned
+it, as we are continuing to make the same kind of mistakes. To see
+this, and to effectively resist it, we have to understand the appeal of
+these mistakes. We have to learn the bitter lesson that building in how
+we think we think does not work in the long run. The bitter lesson is
+based on the historical observations that 1) AI researchers have often
+tried to build knowledge into their agents, 2) this always helps in the
+short term, and is personally satisfying to the researcher, but 3) in
+the long run it plateaus and even inhibits further progress, and 4)
+breakthrough progress eventually arrives by an opposing approach based
+on scaling computation by search and learning. The eventual success is
+tinged with bitterness, and often incompletely digested, because it is
+success over a favored, human-centric approach. <br>
+<br>
+One thing that should be learned from the bitter lesson is the great
+power of general purpose methods, of methods that continue to scale
+with increased computation even as the available computation becomes
+very great. The two methods that seem to scale arbitrarily in this way
+are <span style=font-style:italic>search</span> and <span style=font-style:italic>learning</span>. <br>
+<br>
+The second general point to be learned from the bitter lesson is that
+the actual contents of minds are tremendously, irredeemably complex; we
+should stop trying to find simple ways to think about the contents of
+minds, such as simple ways to think about space, objects, multiple
+agents, or symmetries. All these are part of the arbitrary,
+intrinsically-complex, outside world. They are not what should be built
+in, as their complexity is endless; instead we should build in only the
+meta-methods that can find and capture this arbitrary complexity.
+Essential to these methods is that they can find good approximations,
+but the search for them should be by our methods, not by us. We want AI
+agents that can discover like we can, not which contain what we have
+discovered. Building in our discoveries only makes it harder to see how
+the discovering process can be done.<br>
+<br>
+</span>
+<script>document.currentScript.remove();!function(){"use strict";(t=>{const n="singlefile-infobar",e="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABAAgMAAADXB5lNAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kj1Iw0AYht+mSkUrDnYQcchQnSyIijqWKhbBQmkrtOpgcukfNGlIUlwcBdeCgz+LVQcXZ10dXAVB8AfEydFJ0UVK/C4ptIjx4LiH9+59+e67A4RGhalm1wSgapaRisfEbG5VDLyiDwEAvZiVmKkn0osZeI6ve/j4ehfhWd7n/hz9St5kgE8kjjLdsIg3iGc2LZ3zPnGIlSSF+Jx43KACiR+5Lrv8xrnosMAzQ0YmNU8cIhaLHSx3MCsZKvE0cVhRNcoXsi4rnLc4q5Uaa9XJbxjMaytprtMcQRxLSCAJETJqKKMCCxFaNVJMpGg/5uEfdvxJcsnkKoORYwFVqJAcP/gb/O6tWZiadJOCMaD7xbY/RoHALtCs2/b3sW03TwD/M3Cltf3VBjD3SXq9rYWPgIFt4OK6rcl7wOUOMPSkS4bkSH6aQqEAvJ/RM+WAwVv6EGtu31r7OH0AMtSr5Rvg4BAYK1L2use9ezr79u+ZVv9+AFlNcp0UUpiqAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5AsHAB8H+DhhoQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAJUExURQAAAICHi4qKioTuJAkAAAABdFJOUwBA5thmAAAAAWJLR0QCZgt8ZAAAAJJJREFUOI3t070NRCEMA2CnYAOyDyPwpHj/Va7hJ3FzV7zy3ET5JIwoAF6Jk4wzAJAkzxAYG9YRTgB+24wBgKmfrGAKTcEfAY4KRlRoIeBTgKOCERVaCPgU4Khge2GqKOBTgKOCERVaAEC/4PNcnyoSWHpjqkhwKxbcig0Q6AorXYF/+A6eIYD1lVbwG/jdA6/kA2THRAURVubcAAAAAElFTkSuQmCC",o="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABAAgMAAADXB5lNAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kj1Iw0AYht+mSkUrDnYQcchQnSyIijqWKhbBQmkrtOpgcukfNGlIUlwcBdeCgz+LVQcXZ10dXAVB8AfEydFJ0UVK/C4ptIjx4LiH9+59+e67A4RGhalm1wSgapaRisfEbG5VDLyiDwEAvZiVmKkn0osZeI6ve/j4ehfhWd7n/hz9St5kgE8kjjLdsIg3iGc2LZ3zPnGIlSSF+Jx43KACiR+5Lrv8xrnosMAzQ0YmNU8cIhaLHSx3MCsZKvE0cVhRNcoXsi4rnLc4q5Uaa9XJbxjMaytprtMcQRxLSCAJETJqKKMCCxFaNVJMpGg/5uEfdvxJcsnkKoORYwFVqJAcP/gb/O6tWZiadJOCMaD7xbY/RoHALtCs2/b3sW03TwD/M3Cltf3VBjD3SXq9rYWPgIFt4OK6rcl7wOUOMPSkS4bkSH6aQqEAvJ/RM+WAwVv6EGtu31r7OH0AMtSr5Rvg4BAYK1L2use9ezr79u+ZVv9+AFlNcp0UUpiqAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5AsHAB8VC4EQ6QAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAJUExURQAAAICHi4qKioTuJAkAAAABdFJOUwBA5thmAAAAAWJLR0QCZgt8ZAAAAJtJREFUOI3NkrsBgCAMRLFwBPdxBArcfxXFkO8rbKWAAJfHJ9faf9vuYX/749T5NmShm3bEwbe2SxeuM4+2oxDL1cDoKtVUjRy+tH78Cv2CS+wIiQNC1AEhk4AQeUTMWUJMfUJMSEJMSEY8kIx4IONroaYAimNxsXp1PA7PxwfVL8QnowwoVC0lig07wDDVUjAdbAnjwtow/z/bDW7eI4M2KruJAAAAAElFTkSuQmCC",i="SingleFile",A="single-file-ui-element",r="\n\t.infobar {\n\t\tbackground-color: #737373;\n\t\tcolor: white;\n\t\tdisplay: flex;\n\t\tposition: fixed;\n\t\ttop: 16px;\n\t\tright: 16px;\n\t\theight: auto;\n\t\twidth: auto;\n\t\tmin-height: 24px;\n\t\tmin-width: 24px;\n\t\tbackground-position: center;\n\t\tbackground-repeat: no-repeat;\n\t\tz-index: 2147483647;\n\t\tmargin: 0 0 0 16px;\n\t\tbackground-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kj1Iw0AYht+mSkUrDnYQcchQnSyIijqWKhbBQmkrtOpgcukfNGlIUlwcBdeCgz+LVQcXZ10dXAVB8AfEydFJ0UVK/C4ptIjx4LiH9+59+e67A4RGhalm1wSgapaRisfEbG5VDLyiDwEAvZiVmKkn0osZeI6ve/j4ehfhWd7n/hz9St5kgE8kjjLdsIg3iGc2LZ3zPnGIlSSF+Jx43KACiR+5Lrv8xrnosMAzQ0YmNU8cIhaLHSx3MCsZKvE0cVhRNcoXsi4rnLc4q5Uaa9XJbxjMaytprtMcQRxLSCAJETJqKKMCCxFaNVJMpGg/5uEfdvxJcsnkKoORYwFVqJAcP/gb/O6tWZiadJOCMaD7xbY/RoHALtCs2/b3sW03TwD/M3Cltf3VBjD3SXq9rYWPgIFt4OK6rcl7wOUOMPSkS4bkSH6aQqEAvJ/RM+WAwVv6EGtu31r7OH0AMtSr5Rvg4BAYK1L2use9ezr79u+ZVv9+AFlNcp0UUpiqAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5AsHADIRLMaOHwAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAPUExURQAAAIqKioyNjY2OjvDw8L2y1DEAAAABdFJOUwBA5thmAAAAAWJLR0QB/wIt3gAAAGNJREFUSMdjYCAJsLi4OBCQx6/CBQwIGIDPCBcXAkYQUsACU+AwlBVQHg6Eg5pgZBGOboIJZugDFwRwoJECJCUOhJI1wZwzqmBUwagCuipgIqTABG9h7YIKaKGAURAFEF/6AQAO4HqSoDP8bgAAAABJRU5ErkJggg==);\n\t\tborder-radius: 16px;\n\t\tuser-select: none;\n\t\t-moz-user-select: none;\n\t\topacity: .7;\n\t\tcursor: pointer;\n\t\tpadding-left: 0;\n\t\tpadding-right: 0;\n\t\tpadding-top: 0;\n\t\tpadding-bottom: 0;\n\t\tborder: 2px solid #eee;\n\t\tbackground-size: 70% 70%;\n\t\ttransition: all 250ms;\n\t\tfont-size: 13px;\n\t}\n\t.infobar:hover {\n\t\topacity: 1;\n\t}\n\t.infobar-open {\n\t\topacity: 1;\n\t\tbackground-color: #f9f9f9;\n\t\tcursor: auto;\n\t\tcolor: #2d2d2d;\n\t\tpadding-top: 2px;\n\t\tpadding-bottom: 2px;\n\t\tborder: 2px solid #878787;\n\t\tbackground-image: none;\n\t\tborder-radius: 8px;\n\t\tuser-select: initial;\n\t\t-moz-user-select: initial;\n\t}\n\t.infobar-close-button {\n\t\tdisplay: none;\n\t\topacity: .7;\n\t\tpadding-top: 4px;\n\t\tpadding-left: 8px;\n\t\tpadding-right: 8px;\n\t\tcursor: pointer;\n\t\ttransition: opacity 250ms;\n\t\theight: 16px;\n\t}\n\t.infobar-close-button:hover {\n\t\topacity: 1;\n\t}\n\t.infobar-content {\n\t\tdisplay: none;\n\t\tfont-family: Arial;\n\t\tfont-size: 14px;\n\t\tline-height: 22px;\n\t\tword-break: break-word;\n\t\twhite-space: pre-wrap;\n\t\tposition: relative;\n\t\ttop: 1px;\n\t\ttext-align: left;\n\t}\n\t.infobar-link {\n\t\tdisplay: none;\n\t\tpadding-left: 8px;\n\t\tpadding-right: 8px;\n\t\tline-height: 11px;\n\t\tcursor: pointer;\n\t\tuser-select: none;\n\t\toutline: 0;\n\t}\n\t.infobar-link-icon {\n\t\tpadding-top: 4px;\n\t\tpadding-left: 2px;\n\t\tcursor: pointer;\n\t\topacity: .7;\n\t\ttransition: opacity 250ms;\n\t\theight: 16px;\n\t}\n\t.infobar-link-icon:hover {\n\t\topacity: 1;\n\t}\n\t.infobar-open .infobar-close-button, .infobar-open .infobar-content, .infobar-open .infobar-link {\n\t\tdisplay: inline-block;\n\t}";let a=!0;const c=t.browser;async function s(){const t=document.evaluate("//comment()",document,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null);let s=t&&t.singleNodeValue;if(s&&((p=s).nodeType==Node.COMMENT_NODE&&p.textContent.includes(i))){const t=s.textContent.split("\n"),[,,i,p,...g]=t,h=i.match(/^ url: (.*) $/),u=h&&h[1];if(u&&p){let t;if(c&&c.runtime&&c.runtime.sendMessage)try{t=await c.runtime.sendMessage({method:"tabs.getOptions",url:u})}catch(n){t={displayInfobar:!0}}else t={displayInfobar:!0};t.displayInfobar&&await async function(t,i,c){let s=document.querySelector(n);if(!s){if(i=i.split("saved date: ")[1],c&&c.length>1){let t=c[0].split("info: ")[1].trim();for(let n=1;n<c.length-1;n++)t+="\n"+c[n].trim();c=t.trim()}else c=i;s=d(n,document.body),s.className=A;const p=await async function(t){if(t.attachShadow)return t.attachShadow({mode:"open"});{a=!1;const n=d("iframe",t);return n.style.setProperty("background-color","transparent","important"),n.style.setProperty("position","fixed","important"),n.style.setProperty("top",0,"important"),n.style.setProperty("right",0,"important"),n.style.setProperty("width","44px","important"),n.style.setProperty("height","48px","important"),n.style.setProperty("z-index",2147483647,"important"),new Promise((t=>{n.contentDocument.body.style.setProperty("margin",0),n.onload=()=>t(n.contentDocument.body)}))}}(s),g=document.createElement("style");g.textContent=r,p.appendChild(g);const h=document.createElement("div");h.classList.add("infobar"),p.appendChild(h);const u=document.createElement("img");u.classList.add("infobar-close-button"),h.appendChild(u),u.src=o,u.onclick=t=>{0===t.button&&s.remove()};const m=document.createElement("span");h.appendChild(m),m.classList.add("infobar-content"),m.textContent=c;const b=document.createElement("a");b.classList.add("infobar-link"),h.appendChild(b),b.target="_blank",b.rel="noopener noreferrer",b.title="Open source URL: "+t,b.href=t;const f=document.createElement("img");f.classList.add("infobar-link-icon"),b.appendChild(f),f.src=e,l(h),document.addEventListener("click",(t=>{if(0===t.button){let n=t.target;for(;n&&n!=s;)n=n.parentElement;n!=s&&l(h)}}))}}(u,p,g)}}var p}function l(t){if(t.classList.remove("infobar-open"),t.onclick=e=>{if(0===e.button)return function(t){a||document.querySelector(n).childNodes[0].contentWindow.getSelection().removeAllRanges();if(t.classList.add("infobar-open"),t.onclick=null,t.onmouseout=null,!a){const e=document.querySelector(n).childNodes[0];e.style.setProperty("width","100vw","important"),e.style.setProperty("height","100vh","important"),e.style.setProperty("width",t.getBoundingClientRect().width+33+"px","important"),e.style.setProperty("height",t.getBoundingClientRect().height+21+"px","important")}}(t),!1},!a){const t=document.querySelector(n).childNodes[0];t.style.setProperty("width","44px","important"),t.style.setProperty("height","48px","important")}}function d(t,n){const e=document.createElement(t);return n.appendChild(e),Array.from(getComputedStyle(e)).forEach((t=>e.style.setProperty(t,"initial","important"))),e}t.window==t.top&&("loading"==document.readyState?document.addEventListener("DOMContentLoaded",s,!1):s())})("object"==typeof globalThis?globalThis:window)}();
+</script>
