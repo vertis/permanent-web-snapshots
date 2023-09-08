@@ -1,0 +1,150 @@
+<!DOCTYPE html> <html xmlns=http://www.w3.org/1999/xhtml xml:lang=en lang=en style><!--
+ Page saved with SingleFile 
+ url: https://hookrace.net/blog/god-writes-haskell/ 
+ saved date: Fri Sep 08 2023 10:04:27 GMT+0200 (Central European Summer Time)
+--><meta charset=utf-8>
+<link href=http://gmpg.org/xfn/11 rel=profile>
+<meta name=viewport content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>God writes Haskell · HookRace Blog</title>
+<style>*{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}html,body{margin:0;padding:0}html{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:16px;line-height:1.5}@media (min-width:38em){html{font-size:20px}}body{color:#000000;background-color:#fff;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}a{color:#268bd2;text-decoration:none}a:hover,a:focus{text-decoration:underline}h1,h2,h3{margin-bottom:.5rem;font-weight:bold;line-height:1.25;color:#313131;text-rendering:optimizeLegibility}h1{font-size:2rem}h2{margin-top:1rem;font-size:1.5rem}h3{font-size:1.25rem}p{margin-top:0;margin-bottom:1rem;text-align:justify}ul,ol{margin-top:0;margin-bottom:1rem}.container{max-width:38rem;padding-left:1rem;padding-right:1rem;margin-left:auto;margin-right:auto}.masthead{padding-top:1rem;padding-bottom:1rem;margin-bottom:3rem}.masthead-title{margin-top:0;margin-bottom:0;color:#505050}.masthead-title a{color:#505050}.masthead-title small{font-size:75%;font-weight:400;color:#c0c0c0;letter-spacing:0}.post{margin-bottom:4em;-webkit-hyphens:auto;-moz-hyphens:auto;-ms-hyphens:auto;hyphens:auto}.post-title{color:#303030}.post-title{margin-top:0}.post-date{display:block;margin-top:-.5rem;margin-bottom:1rem;color:#9a9a9a}.related{padding-top:2rem;padding-bottom:2rem;border-top:1px solid #eee}.related-posts{padding-left:0;list-style:none}.related-posts h3{margin-top:0}.related-posts li small{font-size:75%;color:#999}.related-posts li a:hover{color:#268bd2;text-decoration:none}.related-posts li a:hover small{color:inherit}</style>
+<link rel=alternate type=application/atom+xml title="Posts · Blog Feed" href=https://hookrace.net/blog/feed/>
+<link rel="shortcut icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAADAUExURQAAAAAAAAAAAAUFAwUEAwICAgUDAQAAAA8PDQAAAAMFBgAAAAwKCQIDA6xvABYsPgQDAWo5AAQDA0iDrSFAWjNljwwWHw8eKodRAAYJDDIbAChNazxznw8KBVIvALNVAFYuAJhXADttj3JDAC5afqhXABAhLytVeSNBVh07VcF9AD0oACtTcD0nACFBWv+oAGvE//Z1AEyf6UiX3lmj12W69u2YAGCw6fugADx/u+NuANBjANeMAHxJAEKKy1GUw6qxrvoAAABAdFJOUwAQJEuCNEEGaAu2GN5w+PWk/o/6/fv25uLN9Pr6Vpr++/zgxf7wmOGc2f7nvdHF//////////////////////6PGmgMAAACp0lEQVQ4y01S14KjMAyk2GCKMR0SYNPLZgumhZBskv//q5Nhc3fzYGR7RoMlSRJAx6oGUGSxkUWoYUWX/sHaOALpBimSpKYi3qVvRP5LwE454nL60iTyM23OK9d6EdRT+eN5K7j5+VLezqXj3Z1zWa78lw2InBlyP4Bx9zeXy9JFpncuzx/aLwFEd1cxtPQCxLQ8z4klU7D16JTCECJkjUTHdsofW9UlJQUCMqZHpBcQGRMhPpWnGRaHJaimh+BddRMiyFTe5+dyZSrj4XVUAYpFtRAizQH7DyD5wu5WLYRq/MdbdQcR3lwvjg12SypLxa6qPBf/PuIKcUHSKyR1U1hQ8Qb3C5tMlZI3sFntblV1W5poUV1Xq8UVjuY+nhyUtBK43u5zU0W3abPwbF/7bYa29ADLuW1SzfJfG5fgV7OKmW3bPqLU39NCQz4AERWDvzG98vhs25DKRhG0kWkZsoChSzImpjpOy2fHeeDKEml55CqvDhvHoGVjoaw157xPsHTseQYdUWC0dMnCa94mVMwVDngPV9T47DpG8XEdBOu9+r1ueR8dRIHVJw8C8BglaN1zcHwmARdoZ/AXwjoEDxrwp33o+i3LICHbdjwImQkZjn0Xxm2XmS3P45Zntm8GPJ+9d13oIqJIxmfTMDeqo7jn25B3QZ7nQDUPdZMQ8VzlUD8S+t48wqYPI94B+rrJzKgepm5reT3MtP3QDE0T5/zJGEuSODbzOp+N3SZDHZmKGtV1PcRbyIYoMmN3L44JhULtH3XmKtZ7U9e5DetwOEQDQ2ioH1EmZu/70TCoH3g0WxdlD8jUDDEpMlBsBWHGmA0lVxPGYl+hSRiGzHZVGbEwjMVw4oIQTZd0jRCiyhImCNECeq2rEKhiJHSA9N8X+j2NgT4GfwDCBlvbVoSuhwAAAABJRU5ErkJggg==" data-sf-original-href=https://hookrace.net/public/favicon.ico><style>.sf-hidden{display:none!important}</style><link rel=canonical href=https://hookrace.net/blog/god-writes-haskell/><meta http-equiv=content-security-policy content="default-src 'none'; font-src 'self' data:; img-src 'self' data:; style-src 'unsafe-inline'; media-src 'self' data:; script-src 'unsafe-inline' data:; object-src 'self' data:; frame-src 'self' data:;"><style>img[src="data:,"],source[src="data:,"]{display:none!important}</style></head>
+ <body>
+ <div class="container content">
+ <div class=masthead>
+ <h3 class=masthead-title>
+ <a href=https://hookrace.net/ title=Home>HookRace Blog</a>
+ 
+ &nbsp;&nbsp;&nbsp;
+ <small><a href=https://hookrace.net/blog/>Posts</a></small>
+ 
+ &nbsp;&nbsp;&nbsp;
+ <small><a href=https://hookrace.net/blog/feed/>Feed</a></small>
+ 
+ &nbsp;&nbsp;&nbsp;
+ <small><a href=https://ddnet.org/>DDNet</a></small>
+ 
+ &nbsp;&nbsp;&nbsp;
+ <small><a href=https://dennis.felsing.org/>Me</a></small>
+ 
+ &nbsp;&nbsp;&nbsp;
+ <small><a href=https://hookrace.net/switch-theme/>Switch Theme</a></small>
+ 
+ </h3>
+ </div>
+ 
+ <link rel=alternate type=application/atom+xml title="Programming Posts · Blog Feed" href=https://hookrace.net/blog/feed/programming/ class=sf-hidden>
+ <link rel=alternate type=application/atom+xml title="Haskell Posts · Blog Feed" href=https://hookrace.net/blog/feed/haskell/ class=sf-hidden>
+<div class=post>
+ <h1 class=post-title>God writes Haskell</h1>
+ <span class=post-date>2023-06-03
+ 
+ · <a href=https://hookrace.net/blog/programming/>Programming</a>
+ 
+ · <a href=https://hookrace.net/blog/haskell/>Haskell</a>
+ 
+ </span>
+ <p>God famously does not play dice with the universe, but he seems to enjoy writing <a href=https://www.haskell.org/>Haskell</a>:
+</p>
+<ol>
+ <li>
+ <p>Consider the <a href=https://en.wikipedia.org/wiki/Wave%E2%80%93particle_duality>wave-particle duality</a> in quantum mechanics. Every particle behaves as a wave, as long as you haven’t interacted with it. Thanks to Haskell’s <a href=https://wiki.haskell.org/Lazy_evaluation>lazy evaluation</a> values are also only evaluated once they are accessed (interacted with particles), and stay unevaluated thunks (waves) in the meantime.</p>
+ </li>
+ <li>
+ <p>Two particles can be <a href=https://en.wikipedia.org/wiki/Quantum_entanglement>Quantum-entangled</a>, so that their states depend on each other, even though the particles are seperated by any distance. In Haskell a value, whether it’s evaluated yet or not, can also be shared and then used in a totally different location in the program without having to copy it. The value is even immutable, so that you can’t change it from one location and thus influence the other. Similarly for entangled particles you can’t manipulate one to change the state of the other particle, which might be far away and thus break the maximum <a href=https://en.wikipedia.org/wiki/Speed_of_light>speed of information</a>.</p>
+ </li>
+ <li>
+ <p>Since values are immutable they have to be cleaned up more often in Haskell than typically in imperative languages. <a href=https://www.haskell.org/ghc/>GHC</a>, the most commonly used Haskell compiler, allocates new data in a special area. Only after a supernova will the still-relevant data be ejected into the larger universe.</p>
+ </li>
+ <li>
+ <p>Haskell beginners often use lists instead of arrays. You can’t do random access in a linked list, but only access the first element and then the rest of the list. The real world also doesn’t allow you random access, you are limited by the speed of light and have to go from one location to the next.</p>
+ </li>
+ <li>
+ <p>Time also seems to be a linked list, not even doubly linked, since you can’t go back after accessing the current element. Seems like an awkward bug.</p>
+ </li>
+ <li>
+ <p>Since the Haskell type system is so good at catching bugs, you often feel like you don’t even need to write tests. This is unfortunately untrue, as the strange physical bugs of our universe demonstrate: The speed of light happens to stay the same, no matter what speed you move at.</p>
+ </li>
+ <li>
+ <p>There seems to be a long-term memory leak in Haskell, which is kind of easy to happen since you can have unevaluated thunks growing in size as long as they are still reachable. Unfortunately this memory leak will keep growing until it consumes the entire universe, which will then die of its <a href=https://en.wikipedia.org/wiki/Heat_death_of_the_universe>heat death</a>.</p>
+ </li>
+</ol>
+<p>Discuss on <a href="https://news.ycombinator.com/item?id=37414624">Hacker News</a></p>
+</div>
+<div class=related>
+ <h2>Related Posts</h2>
+ <ul class=related-posts>
+ 
+ 
+ 
+ 
+ 
+ 
+ <li><h3><a href=https://hookrace.net/blog/haskell-game-programming-with-gif-streams/>Haskell: Game Programming with GIF Streams <small>2023-09-07</small></a></h3></li>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <li><h3><a href=https://hookrace.net/blog/database-testing-at-yugabyte/>Database Testing at Yugabyte <small>2023-01-14</small></a></h3></li>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <li><h3><a href=https://hookrace.net/blog/macos-setup/>macOS Setup after 15 Years of Linux <small>2021-12-26</small></a></h3></li>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <li><h3><a href=https://hookrace.net/blog/quest-for-the-lost-home-server/>Quest for the Lost Home Server <small>2019-10-15</small></a></h3></li>
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ <li><h3><a href=https://hookrace.net/blog/chinese-traffic-time.gif/>Chinese Traffic to time.gif <small>2019-05-21</small></a></h3></li>
+ 
+ 
+ 
+ 
+ </ul>
+</div>
+ </div>
+ 
+ 
+ 
+<single-file-infobar style="all: initial !important; direction: initial !important; unicode-bidi: initial !important; --fbc-font-size: initial !important; --fbc-secondary-text: initial !important; --fbc-primary-text: initial !important; --fbc-borders: initial !important; --fbc-transition: initial !important; --fbc-white: initial !important; --fbc-light-gray: initial !important; --fbc-gray-20: initial !important; --fbc-blue-70: initial !important; --fbc-blue-60: initial !important;"><template shadowroot=open><div><style>.infobar,.infobar .infobar-icon,.infobar .infobar-link-icon {min-inline-size:28px;min-block-size:28px;box-sizing:border-box;}.infobar,.infobar .infobar-close-icon,.infobar .infobar-link-icon {opacity:0.7;transition:opacity 250ms;}.infobar:hover,.infobar .infobar-close-icon:hover,.infobar .infobar-link-icon:hover {opacity:1;}.infobar,.infobar-content {display:flex;}.infobar {position:fixed;top:16px;right:16px;margin-inline-start:16px;margin-block-end:16px;color:#2d2d2d;background-color:#737373;border:2px solid;border-color:#eee;border-radius:16px;z-index:2147483647;}.infobar:valid,.infobar:not(:focus-within) .infobar-content {display:none;}.infobar:focus-within {background-color:#f9f9f9;border-color:#878787;border-radius:8px;opacity:1;transition-property:opacity,background-color,border-color,border-radius,color;}.infobar-content {align-items:center;}.infobar-content span {font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:18px;word-break:break-word;white-space:pre-wrap;margin-inline:4px;margin-block:4px;}.infobar .infobar-icon,.infobar .infobar-close-icon,.infobar .infobar-link-icon {cursor:pointer;background-position:center;background-repeat:no-repeat;}.infobar .infobar-close-icon,.infobar .infobar-link-icon {align-self:flex-start;}.infobar .infobar-icon {position:absolute;min-inline-size:24px;min-block-size:24px;}.infobar:focus-within .infobar-icon {z-index:-1;background-image:none;}.infobar .infobar-close-icon {min-inline-size:22px;min-block-size:22px;}.infobar .infobar-icon {background-color:transparent;background-size:70%;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABABAMAAABYR2ztAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kj1Iw0AYht+mSkUrDnYQcchQnSyIijqWKhbBQmkrtOpgcukfNGlIUlwcBdeCgz+LVQcXZ10dXAVB8AfEydFJ0UVK/C4ptIjx4LiH9+59+e67A4RGhalm1wSgapaRisfEbG5VDLyiDwEAvZiVmKkn0osZeI6ve/j4ehfhWd7n/hz9St5kgE8kjjLdsIg3iGc2LZ3zPnGIlSSF+Jx43KACiR+5Lrv8xrnosMAzQ0YmNU8cIhaLHSx3MCsZKvE0cVhRNcoXsi4rnLc4q5Uaa9XJbxjMaytprtMcQRxLSCAJETJqKKMCCxFaNVJMpGg/5uEfdvxJcsnkKoORYwFVqJAcP/gb/O6tWZiadJOCMaD7xbY/RoHALtCs2/b3sW03TwD/M3Cltf3VBjD3SXq9rYWPgIFt4OK6rcl7wOUOMPSkS4bkSH6aQqEAvJ/RM+WAwVv6EGtu31r7OH0AMtSr5Rvg4BAYK1L2use9ezr79u+ZVv9+AFlNcp0UUpiqAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5AsHADIRLMaOHwAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAPUExURQAAAIqKioyNjY2OjvDw8L2y1DEAAAABdFJOUwBA5thmAAAAAWJLR0QB/wIt3gAAAGNJREFUSMdjYCAJsLi4OBCQx6/CBQwIGIDPCBcXAkYQUsACU+AwlBVQHg6Eg5pgZBGOboIJZugDFwRwoJECJCUOhJI1wZwzqmBUwagCuipgIqTABG9h7YIKaKGAURAFEF/6AQAO4HqSoDP8bgAAAABJRU5ErkJggg==);}.infobar .infobar-link-icon {background-size:60%;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABAAgMAAADXB5lNAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kj1Iw0AYht+mSkUrDnYQcchQnSyIijqWKhbBQmkrtOpgcukfNGlIUlwcBdeCgz+LVQcXZ10dXAVB8AfEydFJ0UVK/C4ptIjx4LiH9+59+e67A4RGhalm1wSgapaRisfEbG5VDLyiDwEAvZiVmKkn0osZeI6ve/j4ehfhWd7n/hz9St5kgE8kjjLdsIg3iGc2LZ3zPnGIlSSF+Jx43KACiR+5Lrv8xrnosMAzQ0YmNU8cIhaLHSx3MCsZKvE0cVhRNcoXsi4rnLc4q5Uaa9XJbxjMaytprtMcQRxLSCAJETJqKKMCCxFaNVJMpGg/5uEfdvxJcsnkKoORYwFVqJAcP/gb/O6tWZiadJOCMaD7xbY/RoHALtCs2/b3sW03TwD/M3Cltf3VBjD3SXq9rYWPgIFt4OK6rcl7wOUOMPSkS4bkSH6aQqEAvJ/RM+WAwVv6EGtu31r7OH0AMtSr5Rvg4BAYK1L2use9ezr79u+ZVv9+AFlNcp0UUpiqAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5AsHAB8H+DhhoQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAJUExURQAAAICHi4qKioTuJAkAAAABdFJOUwBA5thmAAAAAWJLR0QCZgt8ZAAAAJJJREFUOI3t070NRCEMA2CnYAOyDyPwpHj/Va7hJ3FzV7zy3ET5JIwoAF6Jk4wzAJAkzxAYG9YRTgB+24wBgKmfrGAKTcEfAY4KRlRoIeBTgKOCERVaCPgU4Khge2GqKOBTgKOCERVaAEC/4PNcnyoSWHpjqkhwKxbcig0Q6AorXYF/+A6eIYD1lVbwG/jdA6/kA2THRAURVubcAAAAAElFTkSuQmCC);}.infobar .infobar-close-icon {appearance:none;background-size:80%;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABAAgMAAADXB5lNAAABhmlDQ1BJQ0MgcHJvZmlsZQAAKJF9kj1Iw0AYht+mSkUrDnYQcchQnSyIijqWKhbBQmkrtOpgcukfNGlIUlwcBdeCgz+LVQcXZ10dXAVB8AfEydFJ0UVK/C4ptIjx4LiH9+59+e67A4RGhalm1wSgapaRisfEbG5VDLyiDwEAvZiVmKkn0osZeI6ve/j4ehfhWd7n/hz9St5kgE8kjjLdsIg3iGc2LZ3zPnGIlSSF+Jx43KACiR+5Lrv8xrnosMAzQ0YmNU8cIhaLHSx3MCsZKvE0cVhRNcoXsi4rnLc4q5Uaa9XJbxjMaytprtMcQRxLSCAJETJqKKMCCxFaNVJMpGg/5uEfdvxJcsnkKoORYwFVqJAcP/gb/O6tWZiadJOCMaD7xbY/RoHALtCs2/b3sW03TwD/M3Cltf3VBjD3SXq9rYWPgIFt4OK6rcl7wOUOMPSkS4bkSH6aQqEAvJ/RM+WAwVv6EGtu31r7OH0AMtSr5Rvg4BAYK1L2use9ezr79u+ZVv9+AFlNcp0UUpiqAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH5AsHAB8VC4EQ6QAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAJUExURQAAAICHi4qKioTuJAkAAAABdFJOUwBA5thmAAAAAWJLR0QCZgt8ZAAAAJtJREFUOI3NkrsBgCAMRLFwBPdxBArcfxXFkO8rbKWAAJfHJ9faf9vuYX/749T5NmShm3bEwbe2SxeuM4+2oxDL1cDoKtVUjRy+tH78Cv2CS+wIiQNC1AEhk4AQeUTMWUJMfUJMSEJMSEY8kIx4IONroaYAimNxsXp1PA7PxwfVL8QnowwoVC0lig07wDDVUjAdbAnjwtow/z/bDW7eI4M2KruJAAAAAElFTkSuQmCC);}</style><form class="infobar"><span tabindex="-1" class="infobar-icon"></span><span tabindex="-1" class="infobar-content"><input type="checkbox" required="" class="infobar-close-icon" title="Close"><span>Fri Sep 08 2023 10:04:27 GMT+0200 (Central European Summer Time)</span><a class="infobar-link-icon" target="_blank" rel="noopener noreferrer" title="Open source URL: https://hookrace.net/blog/god-writes-haskell/" href="https://hookrace.net/blog/god-writes-haskell/"></a></span></form><script>function M(e,{saveUrl:t,infobarContent:n,saveDate:r}){if(t){const a=e.querySelector("single-file-infobar").shadowRoot;a.querySelector(".infobar-content span").textContent=n||r;const o=a.querySelector(".infobar-content .infobar-link-icon");o.href=t,o.title="Open source URL: "+t}}function P(e){const t=e.evaluate("//comment()",e,null,XPathResult.FIRST_ORDERED_NODE_TYPE,null);let n=t&&t.singleNodeValue;if(n&&n.nodeType==Node.COMMENT_NODE&&n.textContent.includes("SingleFile")){const e=n.textContent.split("\n"),[,,t,...r]=e,a=t.match(/^ url: (.*) ?$/),o=a&&a[1];if(o){let e,t;if(r.length&&(t=r[0].split("saved date: ")[1],t&&r.shift(),r.length>1)){let t=r[0].split("info: ")[1].trim();for(let e=1;e<r.length-1;e++)t+="\n"+r[e].trim();e=t.trim()}return{saveUrl:o,infobarContent:e,saveDate:t}}}}(function U(e){const t=P(e);t&&t.saveUrl&&M(e,t)})(document)</script></div></template></single-file-infobar><script data-template-shadow-root>(()=>{document.currentScript.remove();processNode(document);function processNode(node){node.querySelectorAll("template[shadowroot]").forEach(element=>{let shadowRoot = element.parentElement.shadowRoot;if (!shadowRoot) {try {shadowRoot=element.parentElement.attachShadow({mode:element.getAttribute("shadowroot")});shadowRoot.innerHTML=element.innerHTML;element.remove()} catch (error) {} if (shadowRoot) {processNode(shadowRoot)}}})}})()</script>
