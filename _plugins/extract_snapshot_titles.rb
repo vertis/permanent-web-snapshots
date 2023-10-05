@@ -1,6 +1,7 @@
 require 'nokogiri'
 require 'yaml'
-Jekyll::Hooks.register :site, :pre_render do |_site, _payload|
+Jekyll::Hooks.register :site, :after_init do |_site, _payload|
+  puts "Extracting snapshot titles..."
   # Define the paths
   html_folder = "snapshots"  # Replace with your actual static files folder if different
   yaml_file = "_data/snapshot_titles.yml"  # This is where the YAML file will be saved
