@@ -8,8 +8,9 @@ layout: default
 <ul>
   {% assign snapshots = site.static_files | where: "snapshot", true %}
   {% for page in snapshots %}
+    {% assign title = site.data.snapshot_titles[page.name] %}
     <li>
-      <a href="{{ page.path }}">{{ page.name }}</a>
+      <a href="{{ page.path }}">{{ title }}</a>
     </li>
   {% endfor %}
 </ul>
