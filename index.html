@@ -7,10 +7,19 @@ layout: default
 
 <ul>
   {% assign snapshots = site.static_files | where: "snapshot", true %}
-  {% for page in snapshots %}
-    {% assign title = site.data.snapshot_titles[page.name] %}
-    <li>
-      <a href="{{ page.path }}">{{ title }}</a>
-    </li>
+  {% assign sorted_snapshots = snapshots | sort: "mtime" %}
+  {% for page in sorted_snapshots %}
+  {% assign title = site.data.snapshot_titles[page.name] %}
+  <li>
+    <a href="{{ page.path }}">{{ title }}</a> - Modified Time: {{ page.mtime | date: '%Y-%m-%d' }}
+    <ul>
+      {% for attribute in page %}
+      <li>{{ attribute[0] }}: {{ attribute[1] }}</li>
+      {% endfor %}
+    </ul>
+  </li>
   {% endfor %}
+</ul>
+    </ul>
+  </li>
 </ul>
