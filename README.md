@@ -1,15 +1,17 @@
-# permanent-web-snapshots
+# Permanent Web Snapshots
 
-To install dependencies:
+This project is dedicated to the preservation of web content, ensuring its permanence for use in my Obsidian notes. It leverages the power of Jekyll, a static site generator, for building the website, and bun/postcss/tailwind for styling.
+
+To compile CSS with Bun:
 
 ```bash
 bun install
+bun build-css
 ```
 
-To run:
+To run Jekyll locally:
 
 ```bash
-bun run index.ts
+bundle install
+bundle exec jekyll serve -w
 ```
-
-This project was created using `bun init` in bun v1.0.25. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
