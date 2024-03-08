@@ -753,6 +753,9 @@ figure pre {
   white-space: pre;
   overflow: auto;
 }
+.visited\:text-purple-600:visited {
+  color: rgb(147 51 234 );
+}
 .hover\:text-blue-700:hover {
   --tw-text-opacity: 1;
   color: rgb(29 78 216 / var(--tw-text-opacity));
