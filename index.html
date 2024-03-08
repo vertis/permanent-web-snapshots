@@ -5,13 +5,45 @@
 layout: default
 ---
 
-<ul>
-  {% assign sorted_snapshot_filenames = site.data.sorted_snapshot_dates %} {%
-  for filename in sorted_snapshot_filenames %} {% assign page =
-  site.static_files | where: "path", filename | first %} {% assign title =
-  site.data.snapshot_titles[filename] %}
-  <li>
-    <a href="{{ page.path }}">{{ title }}</a>
-  </li>
+{% assign sorted_snapshot_dates = site.data.sorted_snapshot_dates %}
+<div class="mx-auto max-w-4xl mt-10">
+  <p class="text-gray-600 text-base mt-4">
+    Welcome to our perma-web store, a dedicated space for preserving source
+    material against the risk of online disappearance. Each page within our
+    archive includes a link back to the original source. We encourage visitors
+    to use these original links whenever possible, ensuring the original content
+    creators receive their due recognition and traffic, provided the original
+    material remains accessible online.
+  </p>
+  <p class="text-gray-600 text-base mt-4">
+    My motivation for capturing these snapshots is rooted in a simple yet
+    powerful need: to keep the ever-changing web content available for my notes.
+    It's easy for online articles, essays, and stories to disappear without a
+    trace, taking with them knowledge and perspectives that deserve to be
+    preserved. This project is implemented with SingleFile, Jekyll and Vercel,
+    as I've shared in
+    <a
+      href="https://vertis.io/2024/01/26/how-singlefile-transformed-my-obsidian-workflow/"
+      class="text-blue-500 hover:text-blue-700"
+      >this piece</a
+    >.
+  </p>
+
+  {% for x in sorted_snapshot_dates %}
+
+  <h2 class="text-xl font-bold">{{ x[0] }}</h2>
+  <ul class="list-disc pl-5">
+    {% for filename in x[1] %} {% assign p = site.static_files | where: "path",
+    filename | first %} {% assign title = site.data.snapshot_titles[filename] %}
+    <li class="mt-2">
+      <a
+        href="/snapshots/{{filename}}"
+        class="text-blue-500 hover:text-blue-700"
+        >{{ title }}</a
+      >
+    </li>
+    {% endfor %}
+  </ul>
+
   {% endfor %}
-</ul>
+</div>

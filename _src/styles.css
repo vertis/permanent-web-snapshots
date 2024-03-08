@@ -1,0 +1,43 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import "./pygments-fruity.css";
+
+/* article p {
+  @apply mt-3 text-base text-gray-500;
+} */
+
+article h2 {
+  @apply mt-4 text-xl sm:text-xl font-semibold text-gray-900;
+}
+
+article h3 {
+  @apply mt-4 text-lg sm:text-xl font-semibold text-gray-900;
+}
+
+article a {
+  @apply text-lg font-semibold text-cyan-400 hover:text-cyan-500;
+}
+
+.obv-link {
+  @apply font-semibold text-cyan-400 hover:text-cyan-500 underline;
+}
+
+article iframe {
+  @apply mt-3 mx-auto;
+}
+
+article img {
+  @apply mt-3 mx-auto rounded-lg shadow-lg;
+}
+
+figure.highlight {
+  @apply mt-3 text-sm;
+}
+
+figure pre {
+  @apply px-2;
+  white-space: pre;
+  overflow: auto;
+}
