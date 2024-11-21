@@ -18,7 +18,12 @@ Jekyll::Hooks.register :site, :after_init do |_site, _payload|
     date = date_match ? date_match[1] : "0000-00-00"
 
     # Convert the date string to an actual Date object for sorting, if date is not nil
-    date = Date.parse(date)
+    begin
+      date = Date.parse(date)
+    rescue Date::Error
+      puts "Warning: Could not parse date from filename: #{filename}"
+      date = Date.new(0) # Use earliest possible date as fallback
+    end
 
     # Group by date
     snapshots_grouped_by_dates[date] << filename
