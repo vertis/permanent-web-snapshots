@@ -5,7 +5,8 @@
   "scripts": {
     "build-css": "postcss _src/styles.css -o assets/css/styles-compiled.css",
     "build": "postcss _src/styles.css -o assets/css/styles-compiled.css && bundle exec jekyll build",
-    "pages:dev": "wrangler pages dev _site"
+    "pages:dev": "wrangler pages dev _site",
+    "fix-snapshot": "bun _bin/fix-snapshots.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -18,6 +19,7 @@
     "postcss": "^8.4.35",
     "postcss-cli": "^11.0.0",
     "postcss-import": "^16.0.1",
+    "sharp": "^0.33.4",
     "tailwindcss": "^3.4.1"
   },
   "peerDependencies": {
