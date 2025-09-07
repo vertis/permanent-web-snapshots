@@ -4,10 +4,12 @@
   "type": "module",
   "scripts": {
     "build-css": "postcss _src/styles.css -o assets/css/styles-compiled.css",
-    "build": "bundle install && npm run build-css && bundle exec jekyll build"
+    "build": "postcss _src/styles.css -o assets/css/styles-compiled.css && bundle exec jekyll build",
+    "pages:dev": "wrangler pages dev _site"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "wrangler": "4.34.0",
     "typescript": "^5.4.2"
   },
   "dependencies": {
