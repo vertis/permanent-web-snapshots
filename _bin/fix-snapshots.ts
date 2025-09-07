@@ -13,7 +13,18 @@
 import { readFile, writeFile, mkdir, stat } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { join, extname, basename } from "node:path";
-import sharp from "sharp";
+let sharpMod: any | null = null;
+async function ensureSharp() {
+  if (sharpMod !== null) return sharpMod;
+  try {
+    // Bun sometimes exposes CJS/ESM differently
+    const m: any = await import("sharp");
+    sharpMod = m?.default ?? m;
+  } catch {
+    sharpMod = undefined;
+  }
+  return sharpMod;
+}
 
 const ASSET_ROOT = "assets/snapshots";
 
@@ -72,15 +83,18 @@ async function main() {
       } else if (mime === "image/gif") {
         // keep GIF to preserve animation
       } else {
-        try {
-          outBuf = await sharp(buf, { failOn: false })
-            .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-            .webp({ quality: QUALITY })
-            .toBuffer();
-          outExt = ".webp";
-        } catch (e) {
-          // fallback: keep original
-        }
+        const sharp = await ensureSharp();
+        if (sharp) {
+          try {
+            outBuf = await sharp(buf, { failOn: false })
+              .resize({ width: MAX_WIDTH, withoutEnlargement: true })
+              .webp({ quality: QUALITY })
+              .toBuffer();
+            outExt = ".webp";
+          } catch (e) {
+            // fallback: keep original
+          }
+        } // else: keep original
       }
 
       const baseName = `img-${String(idx++).padStart(4, "0")}-${sha}${outExt}`;
