@@ -3,7 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "scripts": {
-    "build-css": "postcss _src/styles.css -o assets/css/styles-compiled.css"
+    "build-css": "postcss _src/styles.css -o assets/css/styles-compiled.css",
+    "build": "bundle install && npm run build-css && bundle exec jekyll build"
   },
   "devDependencies": {
     "@types/bun": "latest",
