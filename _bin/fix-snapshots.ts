@@ -1,32 +1,28 @@
 #!/usr/bin/env bun
 /**
- * Normalize SingleFile snapshots to stay under Cloudflare Pages 25 MiB per-file limit.
- * - Extracts embedded data URL images to files under /assets/snapshots/<slug>/
- * - Rewrites <img src="data:..."> to file URLs
- * - Re-encodes raster images to WebP (quality=70) and caps width at 1600px
- * - Leaves GIFs as .gif (to preserve animation) and SVGs as .svg
+ * Inline-compress SingleFile snapshots to stay under Cloudflare Pages 25 MiB/file limit.
+ * - Keeps images INLINE as data URLs (no external files)
+ * - Re-encodes raster images to WebP and caps width
+ * - Works for <img>, CSS url(), or anywhere data:image;base64 appears
  *
- * Usage: bun _bin/fix-snapshots.ts [--all] [--threshold 20000000]
- *  - By default, only processes HTML files > 20 MiB (20,000,000 bytes)
+ * Usage: bun _bin/fix-snapshots.ts <path/to/snapshot.html> [--maxWidth=1600] [--quality=70]
  */
 
-import { readFile, writeFile, mkdir, stat } from "node:fs/promises";
+import { readFile, writeFile, stat } from "node:fs/promises";
 import { createHash } from "node:crypto";
-import { join, extname, basename } from "node:path";
+import { basename } from "node:path";
+
 let sharpMod: any | null = null;
 async function ensureSharp() {
   if (sharpMod !== null) return sharpMod;
   try {
-    // Bun sometimes exposes CJS/ESM differently
     const m: any = await import("sharp");
     sharpMod = m?.default ?? m;
-  } catch {
-    sharpMod = undefined;
+  } catch (e) {
+    throw new Error("sharp is required. Install with: bun add sharp");
   }
   return sharpMod;
 }
-
-const ASSET_ROOT = "assets/snapshots";
 
 const args = new Map<string, string | boolean>();
 const positional: string[] = [];
@@ -42,9 +38,11 @@ for (let i = 2; i < process.argv.length; i++) {
 
 const MAX_WIDTH = Number(args.get("--maxWidth") || 1600);
 const QUALITY = Number(args.get("--quality") || 70);
+const TARGET = args.get("--targetBytes") ? Number(args.get("--targetBytes")) : undefined; // e.g. 25165824 for 24 MiB
 
-const dataUrlRe = /src=(['"])data:(image\/[a-zA-Z+\-.]+);base64,([^"']+)\1/g;
-const srcsetDataRe = /\s+srcset=("|')(?:[^\1]*data:[^\1]*)\1/g; // remove data: srcset attributes
+// Generic matcher for inline image data URLs across attributes and CSS
+// Allow optional parameters before ;base64 (e.g., name=, charset=) and whitespace in payload
+const dataImageRe = /data:(image\/[A-Za-z0-9+.\-]+)(?:;[^,]*)?;\s*base64\s*,([A-Za-z0-9+/=\s]+)/gi;
 
 async function main() {
   if (positional.length !== 1) {
@@ -56,81 +54,120 @@ async function main() {
   const st = await stat(fullPath);
   const beforeBytes = st.size;
   const file = basename(fullPath);
-  const slug = file.replace(/\.html$/, "");
-  const assetDir = join(ASSET_ROOT, slug);
-  await mkdir(assetDir, { recursive: true });
 
-  let html = await readFile(fullPath, "utf8");
-  const saved: Record<string, string> = {}; // hash->relativePath
+  const original = await readFile(fullPath, "utf8");
+  // Quick diagnostics: show a few data:image occurrences with nearby text
+  debugSampleDataImages(original);
+  let current = original;
+  let pass = 0;
+  let q = QUALITY;
+  let w = MAX_WIDTH;
+  const targetBytes = TARGET ?? beforeBytes; // if no target provided, do one pass
+  let lastReplacements = 0;
 
-  // remove data: srcset attributes to avoid duplicates
-  html = html.replace(srcsetDataRe, "");
-
-  let idx = 0;
-  html = await replaceAsync(html, dataUrlRe, async (m, quote, mime: string, b64: string) => {
-    try {
-      const buf = Buffer.from(b64, "base64");
-      const sha = createHash("sha1").update(buf).digest("hex").slice(0, 12);
-      if (saved[sha]) {
-        return `src=${quote}${saved[sha]}${quote}`;
-      }
-
-      let outBuf: Buffer = buf;
-      let outExt = extFromMime(mime);
-
-      if (mime.startsWith("image/svg")) {
-        // keep as-is
-      } else if (mime === "image/gif") {
-        // keep GIF to preserve animation
-      } else {
-        const sharp = await ensureSharp();
-        if (sharp) {
-          try {
-            outBuf = await sharp(buf, { failOn: false })
-              .resize({ width: MAX_WIDTH, withoutEnlargement: true })
-              .webp({ quality: QUALITY })
-              .toBuffer();
-            outExt = ".webp";
-          } catch (e) {
-            // fallback: keep original
-          }
-        } // else: keep original
-      }
-
-      const baseName = `img-${String(idx++).padStart(4, "0")}-${sha}${outExt}`;
-      const relPath = "/" + join(ASSET_ROOT, slug, baseName).replaceAll("\\", "/");
-      const diskPath = join(assetDir, baseName);
-      await writeFile(diskPath, outBuf);
-      saved[sha] = relPath;
-      return `src=${quote}${relPath}${quote}`;
-    } catch (err) {
-      // On any parse/convert error, leave the original data URL in place
-      return m as string;
+  while (true) {
+    pass++;
+    const before = Buffer.byteLength(current, "utf8");
+    const { html: next, replacements } = await compressInlineOnce(current, q, w);
+    lastReplacements = replacements;
+    const after = Buffer.byteLength(next, "utf8");
+    const delta = before - after;
+    console.log(`pass ${pass}: q=${q} w=${w} matches=${replacements} ${fmtBytes(before)} -> ${fmtBytes(after)} (${fmtDelta(delta)})`);
+    current = next;
+    if (after <= targetBytes) break;
+    if (delta <= 0 || replacements === 0) break;
+    if (q > 40) {
+      q = Math.max(40, q - 10);
+    } else if (w > 1000) {
+      w = Math.max(1000, w - 200);
+    } else {
+      break;
     }
-  });
+  }
 
-  await writeFile(fullPath, html, "utf8");
+  await writeFile(fullPath, current, "utf8");
   const after = await stat(fullPath);
   const delta = beforeBytes - after.size;
-  console.log(`Processed ${fullPath}: ${fmtBytes(beforeBytes)} -> ${fmtBytes(after.size)} (${fmtDelta(delta)})`);
+  console.log(`Processed ${fullPath} (last pass replacements: ${lastReplacements}): ${fmtBytes(beforeBytes)} -> ${fmtBytes(after.size)} (${fmtDelta(delta)})`);
 }
 
-function extFromMime(mime: string): string {
-  switch (mime) {
-    case "image/png":
-      return ".png";
-    case "image/jpeg":
-    case "image/jpg":
-      return ".jpg";
-    case "image/webp":
-      return ".webp";
-    case "image/svg+xml":
-      return ".svg";
-    case "image/gif":
-      return ".gif";
-    default:
-      return "";
+async function compressInlineOnce(html: string, quality: number, maxWidth: number): Promise<{ html: string; replacements: number }>{
+  const sharp = await ensureSharp();
+  const cache: Record<string, string> = {};
+  let out: string[] = [];
+  let i = 0;
+  let replaced = 0;
+
+  const lower = html.toLowerCase();
+  while (true) {
+    const start = lower.indexOf("data:image", i);
+    if (start === -1) break;
+    out.push(html.slice(i, start));
+
+    // mime: from after 'data:' to next ';'
+    const mimeStart = start + 5; // position at 'image'
+    const semi = html.indexOf(";", mimeStart);
+    if (semi === -1) {
+      out.push(html.slice(start));
+      i = html.length;
+      break;
+    }
+    const mime = html.slice(start + 5, semi); // 'image/xxx'
+
+    // find comma after 'base64'
+    const base64Idx = lower.indexOf("base64", semi + 1);
+    if (base64Idx === -1) {
+      out.push(html.slice(start, semi + 1));
+      i = semi + 1;
+      continue;
+    }
+    const comma = html.indexOf(",", base64Idx);
+    if (comma === -1) {
+      out.push(html.slice(start));
+      i = html.length;
+      break;
+    }
+    const dataStart = comma + 1;
+    // consume base64 chars
+    let k = dataStart;
+    while (k < html.length) {
+      const c = html[k];
+      if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c === '+' || c === '/' || c === '=' || c === '\\n' || c === '\\r' || c === '\\t' || c === ' ') {
+        k++;
+      } else {
+        break;
+      }
+    }
+    const b64raw = html.slice(dataStart, k).replace(/\s+/g, "");
+    try {
+      if (mime.toLowerCase().startsWith("image/svg") || mime.toLowerCase() === "image/gif") {
+        out.push(html.slice(start, k));
+      } else {
+        if (replaced < 3) {
+          console.log(`[debug] compress candidate @${start} mime=${mime} b64_len=${b64raw.length}`);
+        }
+        const input = Buffer.from(b64raw, "base64");
+        const sha = createHash("sha1").update(input).digest("hex").slice(0, 16);
+        let webpB64 = cache[sha];
+        if (!webpB64) {
+          const webp = await sharp(input, { failOn: 'none' })
+            .resize({ width: maxWidth, withoutEnlargement: true })
+            .webp({ quality })
+            .toBuffer();
+          webpB64 = webp.toString("base64");
+          cache[sha] = webpB64;
+        }
+        out.push(`data:image/webp;base64,${webpB64}`);
+        replaced++;
+      }
+    } catch (e) {
+      console.log(`[debug] compression failed @${start} mime=${mime}: ${(e as Error).message}`);
+      out.push(html.slice(start, k));
+    }
+    i = k;
   }
+  out.push(html.slice(i));
+  return { html: out.join(""), replacements: replaced };
 }
 
 async function replaceAsync(
@@ -140,8 +177,8 @@ async function replaceAsync(
 ): Promise<string> {
   const matches: { start: number; end: number; text: string; groups: any[] }[] = [];
   let m: RegExpExecArray | null;
-  regex.lastIndex = 0;
-  while ((m = regex.exec(str))) {
+  const global = new RegExp(regex.source, regex.flags.includes("g") ? regex.flags : regex.flags + "g");
+  while ((m = global.exec(str))) {
     matches.push({ start: m.index, end: m.index + m[0].length, text: m[0], groups: m.slice(1) });
   }
   if (matches.length === 0) return str;
@@ -172,5 +209,30 @@ function fmtDelta(d: number): string {
 
 main().catch((e) => {
   console.error(e);
-  process.exitCode = 1;
+  process.exit(1);
 });
+
+function debugSampleDataImages(s: string) {
+  const simple = /data:image/gi;
+  let m: RegExpExecArray | null;
+  let shown = 0;
+  while ((m = simple.exec(s)) && shown < 3) {
+    const start = Math.max(0, m.index - 40);
+    const end = Math.min(s.length, m.index + 140);
+    const snippet = s.slice(start, end).replace(/\n/g, "\\n");
+    console.log(`[debug] data:image at ${m.index}: ...${snippet}...`);
+    // Try to match our full pattern against a larger window from this point
+    const testSlice = s.slice(m.index, Math.min(s.length, m.index + 500));
+    const tester = new RegExp(dataImageRe.source, dataImageRe.flags);
+    const mm = tester.exec(testSlice);
+    if (mm) {
+      console.log(`[debug] pattern matched mime='${mm[1]}' b64_prefix='${mm[2].slice(0,16)}'`);
+    } else {
+      console.log(`[debug] pattern did NOT match within first 500 chars after occurrence`);
+    }
+    shown++;
+  }
+  if (shown === 0) {
+    console.log("[debug] No 'data:image' substrings found. If images are very large, they may be referenced as files, not data URLs.");
+  }
+}
