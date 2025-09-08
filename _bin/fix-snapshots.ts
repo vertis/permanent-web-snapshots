@@ -10,7 +10,7 @@
 
 import { readFile, writeFile, stat } from "node:fs/promises";
 import { createHash } from "node:crypto";
-import { basename } from "node:path";
+import { basename, join } from "node:path";
 
 let sharpMod: any | null = null;
 async function ensureSharp() {
@@ -39,6 +39,15 @@ for (let i = 2; i < process.argv.length; i++) {
 const MAX_WIDTH = Number(args.get("--maxWidth") || 1600);
 const QUALITY = Number(args.get("--quality") || 70);
 const TARGET = args.get("--targetBytes") ? Number(args.get("--targetBytes")) : undefined; // e.g. 25165824 for 24 MiB
+const STRIP_FONTS = args.has("--strip-fonts");
+const STRIP_SCRIPTS = args.has("--strip-scripts");
+const STRIP_STRIPE = args.has("--strip-stripe");
+const STRIP_LARGE_STYLES = args.has("--strip-large-styles");
+const STYLE_THRESHOLD = args.get("--styleThreshold") ? Number(args.get("--styleThreshold")) : 200_000; // 200 KB
+const EXTRACT_IMAGES = args.has("--extract-images");
+const GIF_WEBP = args.has("--gif-webp");
+
+const ASSET_ROOT = "assets/snapshots";
 
 // Generic matcher for inline image data URLs across attributes and CSS
 // Allow optional parameters before ;base64 (e.g., name=, charset=) and whitespace in payload
@@ -55,7 +64,32 @@ async function main() {
   const beforeBytes = st.size;
   const file = basename(fullPath);
 
-  const original = await readFile(fullPath, "utf8");
+  let original = await readFile(fullPath, "utf8");
+  // Optional pre-strips for big offenders
+  if (STRIP_FONTS) {
+    const before = Buffer.byteLength(original, "utf8");
+    original = stripEmbeddedFonts(original);
+    const after = Buffer.byteLength(original, "utf8");
+    console.log(`[strip] fonts: ${fmtBytes(before)} -> ${fmtBytes(after)} (${fmtDelta(before - after)})`);
+  }
+  if (STRIP_STRIPE) {
+    const before = Buffer.byteLength(original, "utf8");
+    original = stripStripeIframes(original);
+    const after = Buffer.byteLength(original, "utf8");
+    console.log(`[strip] stripe iframes: ${fmtBytes(before)} -> ${fmtBytes(after)} (${fmtDelta(before - after)})`);
+  }
+  if (STRIP_SCRIPTS) {
+    const before = Buffer.byteLength(original, "utf8");
+    original = stripScripts(original);
+    const after = Buffer.byteLength(original, "utf8");
+    console.log(`[strip] scripts: ${fmtBytes(before)} -> ${fmtBytes(after)} (${fmtDelta(before - after)})`);
+  }
+  if (STRIP_LARGE_STYLES) {
+    const before = Buffer.byteLength(original, "utf8");
+    original = stripLargeStyleBlocks(original, STYLE_THRESHOLD);
+    const after = Buffer.byteLength(original, "utf8");
+    console.log(`[strip] large <style> blocks (>${STYLE_THRESHOLD} B): ${fmtBytes(before)} -> ${fmtBytes(after)} (${fmtDelta(before - after)})`);
+  }
   // Quick diagnostics: show a few data:image occurrences with nearby text
   debugSampleDataImages(original);
   let current = original;
@@ -65,7 +99,13 @@ async function main() {
   const targetBytes = TARGET ?? beforeBytes; // if no target provided, do one pass
   let lastReplacements = 0;
 
-  while (true) {
+  if (EXTRACT_IMAGES) {
+    const file = basename(fullPath);
+    const slug = file.replace(/\.html$/, "");
+    const { html: next, extracted } = await extractImagesToAssets(current, slug, QUALITY, MAX_WIDTH);
+    current = next;
+    console.log(`[extract] images written: ${extracted}`);
+  } else while (true) {
     pass++;
     const before = Buffer.byteLength(current, "utf8");
     const { html: next, replacements } = await compressInlineOnce(current, q, w);
@@ -140,8 +180,42 @@ async function compressInlineOnce(html: string, quality: number, maxWidth: numbe
     }
     const b64raw = html.slice(dataStart, k).replace(/\s+/g, "");
     try {
-      if (mime.toLowerCase().startsWith("image/svg") || mime.toLowerCase() === "image/gif") {
+      const lowerMime = mime.toLowerCase();
+      if (lowerMime.startsWith("image/svg")) {
         out.push(html.slice(start, k));
+      } else if (lowerMime === "image/gif") {
+        const input = Buffer.from(b64raw, "base64");
+        const sha = createHash("sha1").update(input).digest("hex").slice(0, 16);
+        if (GIF_WEBP) {
+          // Convert animated GIF -> animated WebP inline
+          let webpB64 = cache[sha];
+          if (!webpB64) {
+            const webp = await sharp(input, { animated: true, failOn: 'none' })
+              .resize({ width: maxWidth, withoutEnlargement: true })
+              .webp({ quality })
+              .toBuffer();
+            webpB64 = webp.toString("base64");
+            cache[sha] = webpB64;
+          }
+          out.push(`data:image/webp;base64,${webpB64}`);
+          replaced++;
+        } else {
+          // Try to reoptimise GIF without format change
+          try {
+            let gifB64 = cache[sha];
+            if (!gifB64) {
+              const optim = await sharp(input, { animated: true, failOn: 'none' })
+                .gif({ reoptimise: true })
+                .toBuffer();
+              gifB64 = optim.toString("base64");
+              cache[sha] = gifB64;
+            }
+            out.push(`data:image/gif;base64,${gifB64}`);
+            replaced++;
+          } catch {
+            out.push(html.slice(start, k));
+          }
+        }
       } else {
         if (replaced < 3) {
           console.log(`[debug] compress candidate @${start} mime=${mime} b64_len=${b64raw.length}`);
@@ -168,6 +242,82 @@ async function compressInlineOnce(html: string, quality: number, maxWidth: numbe
   }
   out.push(html.slice(i));
   return { html: out.join(""), replacements: replaced };
+}
+
+async function extractImagesToAssets(
+  html: string,
+  slug: string,
+  quality: number,
+  maxWidth: number
+): Promise<{ html: string; extracted: number }> {
+  const sharp = await ensureSharp();
+  const cache: Record<string, string> = {}; // sha -> path
+  let extracted = 0;
+  const assetDir = join(ASSET_ROOT, slug);
+  await Bun.$`mkdir -p ${assetDir}`.quiet();
+
+  const out = await replaceAsync(html, dataImageRe, async (m, mime: string, b64: string) => {
+    try {
+      const buf = Buffer.from(b64.replace(/\s+/g, ""), "base64");
+      const sha = createHash("sha1").update(buf).digest("hex").slice(0, 16);
+      if (cache[sha]) return `/${cache[sha]}`;
+
+      let outBuf: Buffer = buf;
+      let ext = extFromMime(mime);
+      const lowerMime = mime.toLowerCase();
+      if (lowerMime.startsWith("image/svg")) {
+        // keep as-is
+      } else if (lowerMime === "image/gif") {
+        if (GIF_WEBP) {
+          try {
+            const webp = await sharp(buf, { animated: true, failOn: 'none' })
+              .resize({ width: maxWidth, withoutEnlargement: true })
+              .webp({ quality })
+              .toBuffer();
+            outBuf = webp;
+            ext = ".webp";
+          } catch {}
+        } else {
+          try {
+            const optim = await sharp(buf, { animated: true, failOn: 'none' })
+              .gif({ reoptimise: true })
+              .toBuffer();
+            outBuf = optim;
+            ext = ".gif";
+          } catch {}
+        }
+      } else {
+        try {
+          const webp = await sharp(buf, { failOn: 'none' })
+            .resize({ width: maxWidth, withoutEnlargement: true })
+            .webp({ quality })
+            .toBuffer();
+          outBuf = webp;
+          ext = ".webp";
+        } catch {}
+      }
+      const baseName = `img-${String(extracted).padStart(4, "0")}-${sha}${ext}`;
+      const diskPath = join(assetDir, baseName);
+      await Bun.write(diskPath, outBuf);
+      const relPath = join(ASSET_ROOT, slug, baseName).replaceAll('\\\\','/');
+      cache[sha] = relPath;
+      extracted++;
+      return `/${relPath}`;
+    } catch {
+      return m;
+    }
+  });
+  return { html: out, extracted };
+}
+
+function extFromMime(mime: string): string {
+  const m = mime.toLowerCase();
+  if (m.includes("svg")) return ".svg";
+  if (m.includes("gif")) return ".gif";
+  if (m.includes("png")) return ".png";
+  if (m.includes("jpeg") || m.includes("jpg")) return ".jpg";
+  if (m.includes("webp")) return ".webp";
+  return "";
 }
 
 async function replaceAsync(
@@ -235,4 +385,35 @@ function debugSampleDataImages(s: string) {
   if (shown === 0) {
     console.log("[debug] No 'data:image' substrings found. If images are very large, they may be referenced as files, not data URLs.");
   }
+}
+
+// Remove @font-face blocks that embed data: fonts and any url(data:application/*font*)
+function stripEmbeddedFonts(s: string): string {
+  // Remove entire @font-face {...} blocks that contain data:
+  s = s.replace(/@font-face\s*\{[^}]*\}/gsi, (block) => {
+    return /data:\s*application\/font|data:\s*font\//i.test(block) ? "" : block;
+  });
+  // Also remove any url(data:application/font-...)
+  s = s.replace(/url\(\s*data:[^)]+\)/gsi, (m) => (/font|woff|otf|ttf/i.test(m) ? "" : m));
+  return s;
+}
+
+// Remove Stripe metrics iframes and similar trackers by name/src/srcdoc
+function stripStripeIframes(s: string): string {
+  // Simple heuristic: drop any iframe whose name starts with __privateStripeMetricsController
+  s = s.replace(/<iframe\b[^>]*name=["']__privateStripeMetricsController[^>]*>[\s\S]*?<\/iframe>/gi, "");
+  // Drop any iframe with src or srcdoc referencing stripe.com
+  s = s.replace(/<iframe\b[^>]*?(?:src|srcdoc)=["'][^"']*stripe\.com[^>]*>[\s\S]*?<\/iframe>/gi, "");
+  return s;
+}
+
+// Remove all <script>...</script> blocks
+function stripScripts(s: string): string {
+  return s.replace(/<script\b[\s\S]*?<\/script>/gi, "");
+}
+
+function stripLargeStyleBlocks(s: string, threshold: number): string {
+  return s.replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, (block) => {
+    return block.length > threshold ? "" : block;
+  });
 }
