@@ -1,2 +1,6 @@
 name = "perma-web"
 pages_build_output_dir = "_site"
+
+[[routes]]
+pattern = "perma-web.vertis.io"
+custom_domain = true
