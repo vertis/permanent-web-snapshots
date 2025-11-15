@@ -5,9 +5,12 @@
   "scripts": {
     "build-css": "postcss _src/styles.css -o assets/css/styles-compiled.css",
     "build": "postcss _src/styles.css -o assets/css/styles-compiled.css && bundle exec jekyll build",
+    "prebuild": "bun run fix-singlefile-names",
     "dev": "wrangler dev",
+    "predeploy": "bun run build",
     "deploy": "wrangler deploy",
-    "fix-snapshot": "bun _bin/fix-snapshots.ts"
+    "fix-snapshot": "bun _bin/fix-snapshots.ts",
+    "fix-singlefile-names": "bun _bin/fix-single-file-naming.ts snapshots --apply"
   },
   "devDependencies": {
     "@types/bun": "latest",
