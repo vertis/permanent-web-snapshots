@@ -5,7 +5,8 @@
   "scripts": {
     "build-css": "postcss _src/styles.css -o assets/css/styles-compiled.css",
     "build": "postcss _src/styles.css -o assets/css/styles-compiled.css && bundle exec jekyll build",
-    "pages:dev": "wrangler pages dev _site",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
     "fix-snapshot": "bun _bin/fix-snapshots.ts"
   },
   "devDependencies": {

@@ -1,5 +1,8 @@
 name = "perma-web"
-pages_build_output_dir = "_site"
+compatibility_date = "2025-01-08"
+
+[assets]
+directory = "_site"
 
 [[routes]]
 pattern = "perma-web.vertis.io"
